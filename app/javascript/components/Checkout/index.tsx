@@ -192,11 +192,10 @@ export const Checkout = ({
     if (!item.product.installment_plan || !item.pay_in_installments) return sum;
 
     const price = getDiscountedPrice(cart, item).price;
-    const firstInstallmentPrice = calculateFirstInstallmentPaymentPriceCents(
-      price,
-      item.product.installment_plan.number_of_installments,
-    );
-    return sum + (price - firstInstallmentPrice);
+    const n = item.product.installment_plan.number_of_installments;
+    if (n <= 1) return sum; // no future installments
+    const baseInstallment = Math.floor(price / n);
+    return sum + baseInstallment;
   }, 0);
 
   const isDesktop = useIsAboveBreakpoint("lg");
